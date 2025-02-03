@@ -50,20 +50,20 @@ func main() {
 	defer sourceDB.Close()
 
 	// LevelDB connection details
-	levelDB, err := leveldb.OpenFile("enc_database1m", nil)
+	levelDB, err := leveldb.OpenFile("enc_database6mtwofish", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}
 	defer levelDB.Close()
 
-	// Encryption key (must be 16, 24, or 32 bytes long for Twofish-128, Twofish-192, or Twofish-256)
-	encryptionKey := []byte("thisisaverysecurekeyfor2fish!") // 32-byte key for Twofish-256
+	// FIXED: Proper 32-byte encryption key
+	encryptionKey := []byte("this_is_a_very_secure_32byte_key") // EXACTLY 32 bytes
 
 	// Query to read data from the lineitem table
 	query := `SELECT L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUMBER, L_QUANTITY, 
 	                 L_EXTENDEDPRICE, L_DISCOUNT, L_TAX, L_RETURNFLAG, L_LINESTATUS, 
 	                 L_SHIPDATE, L_COMMITDATE, L_RECEIPTDATE, L_SHIPINSTRUCT, 
-	                 L_SHIPMODE, L_COMMENT FROM lineitem limit 1000000`
+	                 L_SHIPMODE, L_COMMENT FROM lineitem limit 6000000`
 
 	rows, err := sourceDB.Query(query)
 	if err != nil {
@@ -92,44 +92,26 @@ func main() {
 			log.Fatal("Failed to scan row:", err)
 		}
 
-		// Encrypt each column except L_ORDERKEY
-		value1 := L_RECEIPTDATE + L_SHIPMODE + L_COMMENT + L_SHIPINSTRUCT + L_RETURNFLAG + L_LINESTATUS + L_SHIPDATE + L_COMMITDATE
-		encryptedL_value, _ := encryptTwofish(value1, encryptionKey)
+		// Encrypt concatenated values
+		value := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%s",
+			L_RECEIPTDATE, L_SHIPMODE, L_COMMENT, L_SHIPINSTRUCT,
+			L_RETURNFLAG, L_LINESTATUS, L_SHIPDATE, L_COMMITDATE)
 
-		// Create a unique key for LevelDB storage
-		key := fmt.Sprintf("%d_%d_%d_%d", L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUMBER)
+		encryptedValue, _ := encryptTwofish(value, encryptionKey)
 
 		// Store encrypted data in LevelDB
-		err = levelDB.Put([]byte(key), []byte(encryptedL_value), nil)
+		key := fmt.Sprintf("%d_%d_%d_%d", L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUMBER)
+		err = levelDB.Put([]byte(key), []byte(encryptedValue), nil)
 		if err != nil {
 			log.Fatal("Failed to insert into LevelDB:", err)
 		}
 
-		ct += 1
+		ct++
 		if ct%10000 == 0 {
-			fmt.Printf("Inserting : %v \n", ct)
+			fmt.Printf("Inserted into LevelDB: %v records\n", ct)
 		}
 	}
 
-	if err := rows.Err(); err != nil {
-		log.Fatal("Error encountered during rows iteration:", err)
-	}
-
-	// Calculate total elapsed time
 	totalDuration := time.Since(startTime)
 	fmt.Printf("Total data transfer time: %s\n", totalDuration)
-
-	// Print sample LevelDB entries
-	ct = 0
-	iter := levelDB.NewIterator(nil, nil)
-	for iter.Next() {
-		key := iter.Key()
-		value := iter.Value()
-		ct += 1
-		fmt.Printf("\n\nKey: %s, Value: %s\n", key, value)
-		if ct == 5 {
-			break
-		}
-	}
-	iter.Release()
 }

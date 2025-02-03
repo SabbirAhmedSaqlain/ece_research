@@ -30,10 +30,6 @@ func decryptTwofish(encryptedText string, key []byte) (string, error) {
 	}
 
 	blockSize := block.BlockSize()
-	if len(cipherText) < blockSize {
-		return "", fmt.Errorf("ciphertext too short")
-	}
-
 	decrypted := make([]byte, len(cipherText))
 	for i := 0; i < len(cipherText); i += blockSize {
 		block.Decrypt(decrypted[i:], cipherText[i:])
@@ -44,47 +40,32 @@ func decryptTwofish(encryptedText string, key []byte) (string, error) {
 }
 
 func main() {
-	// LevelDB connection details
-	db, err := leveldb.OpenFile("enc_database6m", nil)
+	// Open LevelDB
+	db, err := leveldb.OpenFile("enc_database6mtwofish", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}
 	defer db.Close()
 
-	// Encryption key (must be the same as the one used for encryption)
-	encryptionKey := []byte("thisisaverysecurekeyfor2fish!") // 32-byte key for Twofish-256
-
-	// Measure total time for the operation
+	// FIXED: Proper 32-byte encryption key
+	encryptionKey := []byte("this_is_a_very_secure_32byte_key") // EXACTLY 32 bytes
 	startTime := time.Now()
-	ct := 0
+	// Iterate through LevelDB
 	iter := db.NewIterator(nil, nil)
 	for iter.Next() {
-		// Retrieve the key and encrypted value
 		key := string(iter.Key())
 		encryptedValue := string(iter.Value())
 
-		// Decrypt the value using Twofish
 		decryptedFields, err := decryptTwofish(encryptedValue, encryptionKey)
 		if err != nil {
-			log.Printf("Failed to decrypt row for key %s: %v\n", key, err)
+			log.Printf("Decryption failed for key %s: %v\n", key, err)
 			continue
 		}
 
-		// Print the decrypted data
 		fmt.Printf("Decrypted row for key %s: value = %s\n", key, decryptedFields)
-
-		ct += 1
-		if ct%10000 == 0 {
-			fmt.Printf("Decrypted : %v \n", ct)
-		}
 	}
+	totalDuration := time.Since(startTime)
+	fmt.Printf("Total data transfer time: %s\n", totalDuration)
 
 	iter.Release()
-	if err := iter.Error(); err != nil {
-		log.Fatal("Error during iteration:", err)
-	}
-
-	// Calculate total elapsed time
-	totalDuration := time.Since(startTime)
-	fmt.Printf("Total data processing time: %s\n", totalDuration)
 }
