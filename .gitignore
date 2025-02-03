@@ -6,5 +6,11 @@
 /leveldb/enc_database1mcha
 /leveldb/enc_database3mcha
 /leveldb/enc_database6mcha
+/leveldb/enc_database1mblowfish
+/leveldb/enc_database3mblowfish
+/leveldb/enc_database6mblowfish
+/leveldb/enc_database1mtwofish
+/leveldb/enc_database3mtwofish
+/leveldb/enc_database6mtwofish
 go.mod
 go.sum

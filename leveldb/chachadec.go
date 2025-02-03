@@ -32,7 +32,7 @@ func decryptChaCha20(encryptedText string, key []byte) (string, error) {
 
 func main() {
 	// Open LevelDB
-	db, err := leveldb.OpenFile("enc_database1mcha", nil)
+	db, err := leveldb.OpenFile("enc_database6mcha", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}

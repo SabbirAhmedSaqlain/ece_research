@@ -50,7 +50,7 @@ func main() {
 	defer sourceDB.Close()
 
 	// LevelDB connection details
-	levelDB, err := leveldb.OpenFile("enc_database1m", nil)
+	levelDB, err := leveldb.OpenFile("enc_database6mblowfish", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}
@@ -63,7 +63,7 @@ func main() {
 	query := `SELECT L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUMBER, L_QUANTITY, 
 	                 L_EXTENDEDPRICE, L_DISCOUNT, L_TAX, L_RETURNFLAG, L_LINESTATUS, 
 	                 L_SHIPDATE, L_COMMITDATE, L_RECEIPTDATE, L_SHIPINSTRUCT, 
-	                 L_SHIPMODE, L_COMMENT FROM lineitem limit 1000000`
+	                 L_SHIPMODE, L_COMMENT FROM lineitem limit 6000000`
 
 	rows, err := sourceDB.Query(query)
 	if err != nil {

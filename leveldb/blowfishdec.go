@@ -38,14 +38,14 @@ func decryptBlowfish(encryptedText string, key []byte) (string, error) {
 
 func main() {
 	// LevelDB connection details
-	db, err := leveldb.OpenFile("enc_database6m", nil)
+	db, err := leveldb.OpenFile("enc_database6mblowfish", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}
 	defer db.Close()
 
 	// Encryption key (must be the same as the one used for encryption)
-	encryptionKey := []byte("thisisasecurekey") // Blowfish key (must be 4-56 bytes long)
+	encryptionKey := []byte("this_is_a_secure_blowfish_key") // 32-byte key for Blowfish
 
 	// Measure total time for the operation
 	startTime := time.Now()
