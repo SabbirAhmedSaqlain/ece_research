@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Database connection details
-	dsn := "root:Sabbir@123@tcp(127.0.0.1:3306)/tpchcopy"
+	dsn := "root:Sabbir@123@tcp(127.0.0.1:3306)/acc"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
@@ -34,7 +34,7 @@ func main() {
 	// Execute the query
 	var tableName string
 	var sizeInMB float64
-	err = db.QueryRow(query, "tpchcopy", "lineitem3m_enc").Scan(&tableName, &sizeInMB)
+	err = db.QueryRow(query, "acc", "lineitem6m_enc_Twofish").Scan(&tableName, &sizeInMB)
 	if err != nil {
 		log.Fatal("Failed to execute query:", err)
 	}

@@ -36,7 +36,7 @@ func decrypt(encryptedText string, key []byte) (string, error) {
 
 func main() {
 	// MySQL database connection details
-	dsn := "root:Sabbir@123@tcp(127.0.0.1:3306)/tpchcopy"
+	dsn := "root:Sabbir@123@tcp(127.0.0.1:3306)/acc"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("Failed to connect to MySQL database:", err)

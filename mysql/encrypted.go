@@ -40,7 +40,7 @@ func encrypt(plainText string, key []byte) (string, error) {
 
 func main() {
 	// MySQL database connection details
-	sourceDSN := "root:Sabbir@123@tcp(127.0.0.1:3306)/tpch"
+	sourceDSN := "root:Sabbir@123@tcp(127.0.0.1:3306)/acc"
 	sourceDB, err := sql.Open("mysql", sourceDSN)
 	if err != nil {
 		log.Fatal("Failed to connect to source database:", err)
@@ -48,7 +48,7 @@ func main() {
 	defer sourceDB.Close()
 
 	// Destination MySQL database connection details
-	destDSN := "root:Sabbir@123@tcp(127.0.0.1:3306)/tpchcopy"
+	destDSN := "root:Sabbir@123@tcp(127.0.0.1:3306)/acc"
 	destDB, err := sql.Open("mysql", destDSN)
 	if err != nil {
 		log.Fatal("Failed to connect to destination database:", err)

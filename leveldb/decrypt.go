@@ -35,7 +35,7 @@ func decrypt(encryptedText string, key []byte) (string, error) {
 
 func main() {
 	// LevelDB connection details
-	db, err := leveldb.OpenFile("enc_database6m1", nil)
+	db, err := leveldb.OpenFile("enc_database6m", nil)
 	if err != nil {
 		log.Fatal("Failed to open LevelDB:", err)
 	}
