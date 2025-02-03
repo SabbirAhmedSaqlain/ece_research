@@ -1,0 +1,10 @@
+/mysql/lineitem.tbl
+/leveldb/db
+/leveldb/enc_database1m
+/leveldb/enc_database3m
+/leveldb/enc_database6m
+/leveldb/enc_database1mcha
+/leveldb/enc_database3mcha
+/leveldb/enc_database6mcha
+go.mod
+go.sum
